@@ -3,7 +3,62 @@ import (
 	"fmt"
 	"net/http"
 	"log"
+	"encoding/json"
+	"github.com/gorilla/mux"
+	"app.nazul/models"
 )
+
+const(
+	
+) 
+
+func Index(w http.ResponseWriter, r *http.Request){
+	w.Header().Set("Content-Type","application/json")
+	resp := new(models.EchoResponse)
+	resp.ResultCode = OK
+	resp.ResultMessage="success"
+	resp.Data = r.URL.Path
+	if data, err := json.Marshal(resp); err == nil{
+		fmt.Fprintf(w,"%s", data)
+	}else{
+		fmt.Fprint(w, "{}")
+	}
+}
+
+func Regist(w http.ResponseWriter, r *http.Request){
+	w.Header().Set("Content-Type","application/json")
+	resp := new(models.EchoResponse)
+	loginname := r.FormValue("loginname")
+	password := r.FormValue("password")
+	repass := r.FormValue("repass")
+	if loginname == "" || password == "" || repass == ""{
+		resp.ResultCode = PARAMS_ERROR
+	}else if password != repass{
+		resp.ResultCode = REPASS_ERROR
+	}else{
+		resp.ResultCode = OK
+	}
+	if data, err := json.Marshal(resp); err == nil{
+		fmt.Fprintf(w,"%s", data)
+	}else{
+		fmt.Fprint(w, "{}")
+	}
+}
+
+func Login(w http.ResponseWriter, r *http.Request){
+	w.Header().Set("Content-Type","application/json")
+	fmt.Fprint(w, "{\"resultCode\":0,\"resultMessage\":\"Success\"}")
+}
+
+func Logout(w http.ResponseWriter, r *http.Request){
+	w.Header().Set("Content-Type","application/json")
+	fmt.Fprint(w, "{\"resultCode\":0,\"resultMessage\":\"Success\"}")
+}
+
+func User(w http.ResponseWriter, r *http.Request){
+	w.Header().Set("Content-Type","application/json")
+	fmt.Fprint(w, "{\"resultCode\":0,\"resultMessage\":\"Success\"}")
+}
 
 func handlerFunc(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type","text/html")
@@ -20,7 +75,12 @@ func handlerFunc(w http.ResponseWriter, r *http.Request){
 
 func main(){
 	log.Println("Server run at port:8000")
-	mux := &http.ServeMux{}
-	mux.HandleFunc("/", handlerFunc)
-	log.Fatal(http.ListenAndServe(":8000", mux))
+	r := mux.NewRouter()
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("."))))
+	r.HandleFunc("/", Index)
+	r.HandleFunc("/regist", Regist).Methods("GET", "POST")
+	r.HandleFunc("/login", Login).Methods("GET", "POST")
+	r.HandleFunc("/logout", Logout).Methods("GET", "POST")
+	r.HandleFunc("/user/{uid}", User).Methods("GET", "POST")
+	log.Fatal(http.ListenAndServe(":8000", r))
 }

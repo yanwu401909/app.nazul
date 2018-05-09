@@ -7,21 +7,16 @@ import (
 
 func handlerFunc(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type","text/html")
-	w.Header().Set("Auth","lvye")
-	fmt.Fprint(w, "<h1>Welcome to my super awesome site!!!</h1>")
-}
-
-func handlerSayHi(w http.ResponseWriter, r *http.Request){
-	name := r.FormValue("name")
-	if name == ""{
-		name = "lvye"
+	path := r.URL.Path
+	if path == "/"{
+		fmt.Fprint(w, "<h1>Welcome to my Site!<h1>")
+	}else if path == "/contact"{
+		fmt.Fprint(w, "To get in touch, please send an email to <br/><a href=\"mailto:yanwu401909@gmail.com\">yanwu401909@gmail.com</a>.")
 	}
-	fmt.Fprint(w, "你好," + name + "!!!")
 }
 
 func main(){
 	log.Println("Server run at port:8000")
 	http.HandleFunc("/", handlerFunc)
-	http.HandleFunc("/sayHi", handlerSayHi)
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }

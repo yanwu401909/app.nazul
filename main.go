@@ -20,6 +20,7 @@ func handlerFunc(w http.ResponseWriter, r *http.Request){
 
 func main(){
 	log.Println("Server run at port:8000")
-	http.HandleFunc("/", handlerFunc)
-	log.Fatal(http.ListenAndServe(":8000", nil))
+	mux := &http.ServeMux{}
+	mux.HandleFunc("/", handlerFunc)
+	log.Fatal(http.ListenAndServe(":8000", mux))
 }

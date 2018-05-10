@@ -22,3 +22,22 @@ type EchoResponse struct{
 	// ResultMessage string `json:"resultMessage,omitempty"`
 	Data string `json:"data,omitempty"`
 }
+
+type BooksResponse struct{
+	ApiResponse
+	Data []Book `json:"data,omitempty"`
+}
+
+type BookResponse struct{
+	ApiResponse
+	Data Book `json:"data,omitempty"`
+}
+
+type Book struct{
+	Id string `json:"id,omitempty"`
+	Title string `json:"title,omitempty"`
+	Isbn string `json:"isbn,omitempty"`
+	Author string `json:"author,omitempty"`
+	Image string `json:"image,omitempty"`
+	Description string `json:"description,omitempty"`
+}

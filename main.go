@@ -6,17 +6,16 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"app.nazul/models"
+	"app.nazul/service"
+	"app.nazul/constant"
 )
 
-const(
-	
-) 
 
 func Index(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type","application/json")
 	resp := new(models.EchoResponse)
-	resp.ResultCode = OK
-	resp.ResultMessage="success"
+	resp.ResultCode = constant.OK
+	resp.ResultMessage=constant.CODE_MAPPING[constant.OK]
 	resp.Data = r.URL.Path
 	if data, err := json.Marshal(resp); err == nil{
 		fmt.Fprintf(w,"%s", data)
@@ -32,11 +31,14 @@ func Regist(w http.ResponseWriter, r *http.Request){
 	password := r.FormValue("password")
 	repass := r.FormValue("repass")
 	if loginname == "" || password == "" || repass == ""{
-		resp.ResultCode = PARAMS_ERROR
+		resp.ResultCode = constant.PARAMS_ERROR
+		resp.ResultMessage = constant.CODE_MAPPING[constant.PARAMS_ERROR]
 	}else if password != repass{
-		resp.ResultCode = REPASS_ERROR
+		resp.ResultCode = constant.REPASS_ERROR
+		resp.ResultMessage = constant.CODE_MAPPING[constant.REPASS_ERROR]
 	}else{
-		resp.ResultCode = OK
+		resp.ResultCode = constant.OK
+		resp.ResultMessage = constant.CODE_MAPPING[constant.OK]
 	}
 	if data, err := json.Marshal(resp); err == nil{
 		fmt.Fprintf(w,"%s", data)
@@ -78,9 +80,17 @@ func main(){
 	r := mux.NewRouter()
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("."))))
 	r.HandleFunc("/", Index)
-	r.HandleFunc("/regist", Regist).Methods("GET", "POST")
-	r.HandleFunc("/login", Login).Methods("GET", "POST")
-	r.HandleFunc("/logout", Logout).Methods("GET", "POST")
-	r.HandleFunc("/user/{uid}", User).Methods("GET", "POST")
+	r.HandleFunc("/api/regist", Regist).Methods("GET", "POST")
+	r.HandleFunc("/api/login", Login).Methods("GET", "POST")
+	r.HandleFunc("/api/logout", Logout).Methods("GET", "POST")
+	r.HandleFunc("/api/user/{uid}", User).Methods("GET", "POST")
+	/***BOOKS START***/
+	r.HandleFunc("/api/books", service.GetBooks).Methods("GET")
+	r.HandleFunc("/api/books/{id}", service.GetBook).Methods("GET")
+	r.HandleFunc("/api/books", service.CreateBook).Methods("POST")
+	r.HandleFunc("/api/books/{id}", service.UpdateBook).Methods("PUT")
+	r.HandleFunc("/api/books/{id}", service.DeleteBook).Methods("DELETE")
+	/***BOOKS END***/
+
 	log.Fatal(http.ListenAndServe(":8000", r))
 }

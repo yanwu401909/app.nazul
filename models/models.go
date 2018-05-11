@@ -12,7 +12,7 @@ type ApiRequest struct{
 }
 
 type ApiResponse struct{
-	ResultCode int32 `json:"resultCode"`
+	ResultCode int `json:"resultCode"`
 	ResultMessage string `json:"resultMessage"`
 }
 
@@ -40,4 +40,16 @@ type Book struct{
 	Author string `json:"author,omitempty"`
 	Image string `json:"image,omitempty"`
 	Description string `json:"description,omitempty"`
+}
+
+type User struct{
+	Id string  `json:"id,omitempty"`
+	LoginName string  `json:"loginName,omitempty"`
+	Password string   `json:"password,omitempty"`
+	NickName string   `json:"nickName,omitempty"`
+	Sex uint8	 `json:"sex,omitempty"`
+	Email string `json:"email,omitempty"`
+	Mobile string  `json:"mobile,omitempty"`
+	Status uint8  `json:"status,omitempty"`
+	CreateTime int32 `json:"createTime,omitempty"`
 }

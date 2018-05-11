@@ -1,97 +1,70 @@
 package service
 
 import (
-	"github.com/gorilla/mux"
-	"net/http"
 	"encoding/json"
-	"app.nazul/mock"
-	"app.nazul/models"
-	"app.nazul/constant"
-	"math/rand"
-	"strconv"
+	"net/http"
+
+	. "app.nazul/errors"
+	. "app.nazul/models"
+	"app.nazul/repo"
+	"github.com/gorilla/mux"
 )
 
-func GetBooks(w http.ResponseWriter, r *http.Request){
-	w.Header().Set("Content-Type","application/json")
-	data := new(models.BooksResponse)
-	data.ResultCode = constant.OK
-	data.ResultMessage = constant.CODE_MAPPING[constant.OK]
-	data.Data = mock.BOOKS_DATA
+func GetBooks(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	data := BooksResponse{ApiResponse: ApiResponse{OK, "success"}}
+	data.Data, _ = repo.GetBooks()
 	json.NewEncoder(w).Encode(data)
 }
 
-func GetBook(w http.ResponseWriter, r *http.Request){
-	w.Header().Set("Content-type","application/json")
+func GetBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json")
 	id := mux.Vars(r)["id"]
-	data := new(models.BookResponse)
-	for _,item := range mock.BOOKS_DATA{
-		if item.Id == id{
-			data.ResultCode = constant.OK
-			data.ResultMessage = constant.CODE_MAPPING[constant.OK]
-			data.Data = item
-			json.NewEncoder(w).Encode(data)
-			return
-		}
+	data := BookResponse{ApiResponse: ApiResponse{OK, "success"}}
+	book, err := repo.GetBook(id)
+	if err.Code != OK {
+		data.ResultCode = err.Code
+		data.ResultMessage = err.Message
 	}
-	data.ResultCode = constant.NOTEXIST_ERROR
-	data.ResultMessage = constant.CODE_MAPPING[constant.NOTEXIST_ERROR]
+	data.Data = book
 	json.NewEncoder(w).Encode(data)
 }
 
-func CreateBook(w http.ResponseWriter, r *http.Request){
-	w.Header().Set("Content-type","application/json")
-	data := new(models.ApiResponse)
-	var book models.Book
+func CreateBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json")
+	data := ApiResponse{OK, "success"}
+	var book Book
 	_ = json.NewDecoder(r.Body).Decode(&book)
-	if book.Title == "" || book.Isbn == "" {
-		data.ResultCode = constant.PARAMS_ERROR
-		data.ResultMessage = constant.CODE_MAPPING[constant.PARAMS_ERROR]
-	}else {
-		book.Id = strconv.Itoa(rand.Intn(100000) + 10)
-		mock.BOOKS_DATA = append(mock.BOOKS_DATA, book)
-		data.ResultCode = constant.OK
-		data.ResultMessage = constant.CODE_MAPPING[constant.OK]
+	err := repo.SaveBook(book)
+	if err.Code != OK {
+		data.ResultCode = err.Code
+		data.ResultMessage = err.Message
 	}
 	json.NewEncoder(w).Encode(data)
 }
 
-func UpdateBook(w http.ResponseWriter, r *http.Request){
-	w.Header().Set("Content-type","application/json")
+func UpdateBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json")
+	data := ApiResponse{OK, "success"}
 	id := mux.Vars(r)["id"]
-	data := new(models.ApiResponse)
-	data.ResultCode = constant.NOTEXIST_ERROR
-	data.ResultMessage = constant.CODE_MAPPING[constant.NOTEXIST_ERROR]
-	for index,item := range mock.BOOKS_DATA{
-		if item.Id == id{
-			var book models.Book
-			_ = json.NewDecoder(r.Body).Decode(&book)
-			if book.Title == "" || book.Isbn == "" {
-				data.ResultCode = constant.PARAMS_ERROR
-				data.ResultMessage = constant.CODE_MAPPING[constant.PARAMS_ERROR]
-			}else {
-				mock.BOOKS_DATA = append(mock.BOOKS_DATA[:index], mock.BOOKS_DATA[index+1:]...)
-				book.Id = id
-				mock.BOOKS_DATA = append(mock.BOOKS_DATA, book)
-				data.ResultCode = constant.OK
-				data.ResultMessage = constant.CODE_MAPPING[constant.OK]
-			}
-			break
-		}
+	var book Book
+	_ = json.NewDecoder(r.Body).Decode(&book)
+	err := repo.UpdateBook(id, book)
+	if err.Code != OK {
+		data.ResultCode = err.Code
+		data.ResultMessage = err.Message
 	}
 	json.NewEncoder(w).Encode(data)
 }
 
-func DeleteBook(w http.ResponseWriter, r *http.Request){
-	w.Header().Set("Content-type","application/json")
+func DeleteBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json")
+	data := ApiResponse{OK, "success"}
 	id := mux.Vars(r)["id"]
-	data := new(models.ApiResponse)
-	for index,item := range mock.BOOKS_DATA{
-		if item.Id == id{
-			mock.BOOKS_DATA = append(mock.BOOKS_DATA[:index], mock.BOOKS_DATA[index+1:]...)
-			break
-		}
+	err := repo.DeleteBook(id)
+	if err.Code != OK {
+		data.ResultCode = err.Code
+		data.ResultMessage = err.Message
 	}
-	data.ResultCode = constant.OK
-	data.ResultMessage = constant.CODE_MAPPING[constant.OK]
 	json.NewEncoder(w).Encode(data)
 }

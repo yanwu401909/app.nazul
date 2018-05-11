@@ -1,0 +1,18 @@
+appName : micro-service
+appVersion : 1.0
+appInstanceId : 1
+host : 
+port : 8000
+timeout : 5
+database:
+  host : 127.0.0.1
+  port : 3306
+  name : test
+  charset : utf8
+  username : root
+  password : root
+elasticsearch:
+  host : 192.168.1.134
+  port : 9200
+  esIndex : micro-service
+  esType : asscess-log

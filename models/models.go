@@ -5,10 +5,10 @@ import (
 )
 
 type Pageable struct {
-	PageNo      int
-	PageSize    int
-	TotalRecord int
-	Data        interface{}
+	PageNo      int         `json:"pageNo,omitempty"`
+	PageSize    int         `json:"pageSize,omitempty"`
+	TotalRecord int         `json:"totalRecord,omitempty"`
+	Data        interface{} `json:"data,omitempty"`
 }
 
 func (p *Pageable) TotalPage() int {

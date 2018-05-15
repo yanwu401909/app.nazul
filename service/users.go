@@ -30,6 +30,7 @@ func UserByIdOrName(w http.ResponseWriter, r *http.Request) {
 }
 
 func UsersPage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json")
 	data := UsersPageResponse{ApiResponse: ApiResponse{OK, "success"}}
 	pageNo, _ := strconv.Atoi(r.FormValue("pageNo"))
 	pageSize, _ := strconv.Atoi(r.FormValue("pageSize"))
@@ -50,6 +51,7 @@ func UsersPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func UsersList(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json")
 	data := UsersListResponse{ApiResponse: ApiResponse{OK, "success"}}
 	users, err := repo.UsersList()
 	if err.Code != OK {

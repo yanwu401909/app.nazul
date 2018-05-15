@@ -13,6 +13,7 @@ const (
 	REPASS_ERROR   = 20001
 	NETWORK_ERROR  = 30000
 	DB_ERROR       = 40000
+	SERVER_ERROR   = 50000
 )
 
 /**
@@ -29,6 +30,7 @@ func init() {
 		20001: "重复密码错误",
 		30000: "网络错误",
 		40000: "数据库错误",
+		50000: "服务端错误",
 	}
 }
 

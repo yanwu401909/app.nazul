@@ -65,7 +65,10 @@ func main() {
 	r.HandleFunc("/", ServerStatus).Methods("GET", "POST")
 	http.HandleFunc("/", ServerStatus)
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-
+	/***RSA START***/
+	r.HandleFunc("/api/rsa/{bits}", service.GenerateKeys).Methods("GET")
+	r.HandleFunc("/api/rsa", service.RandomKeyPair).Methods("GET")
+	/***RSA END***/
 	/***USERS START***/
 	r.HandleFunc("/api/users", service.CreateUser).Methods("POST")
 	r.HandleFunc("/api/users", service.UsersPage).Methods("GET")

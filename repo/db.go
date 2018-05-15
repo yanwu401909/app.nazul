@@ -15,6 +15,7 @@ var CONN *gorm.DB
 func init() {
 	var err error
 	CONN, err = gorm.Open("mysql", fmt.Sprintf(connUrl, CONFIG.Database.User, CONFIG.Database.Pass, CONFIG.Database.Host, CONFIG.Database.Port, CONFIG.Database.Name, CONFIG.Database.Charset, CONFIG.Database.Autocommit))
+	// CONN.LogMode(true)
 	log.Printf("DB init....%v", err == nil)
 	if err != nil {
 		log.Fatal(err)
@@ -23,6 +24,11 @@ func init() {
 	CONN.DB().SetMaxOpenConns(CONFIG.Database.MaxOpenConns)
 	if !CONN.HasTable(&models.User{}) {
 		if err := CONN.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&models.User{}).Error; err != nil {
+			log.Fatal(err)
+		}
+	}
+	if !CONN.HasTable(&models.RsaPair{}) {
+		if err := CONN.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&models.RsaPair{}).Error; err != nil {
 			log.Fatal(err)
 		}
 	}

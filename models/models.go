@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 type Pageable struct {
@@ -68,6 +70,11 @@ type UserResponse struct {
 	Data User `json:"data,omitempty"`
 }
 
+type RsaPairResponse struct {
+	ApiResponse
+	Data RsaPair `json:"data,omitempty"`
+}
+
 type BookResponse struct {
 	ApiResponse
 	Data Book `json:"data,omitempty"`
@@ -80,6 +87,12 @@ type Book struct {
 	Author      string `json:"author,omitempty"`
 	Image       string `json:"image,omitempty"`
 	Description string `json:"description,omitempty"`
+}
+
+type RsaPair struct {
+	gorm.Model
+	PublicKey  string `gorm:"type:varchar(2048);not null;" json:"publicKey,omitempty"`
+	PrivateKey string `gorm:"type:varchar(2048);not null;" json:"privateKey,omitempty"`
 }
 
 type User struct {

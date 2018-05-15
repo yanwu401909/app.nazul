@@ -12,7 +12,7 @@ import (
 
 func GetBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	data := BooksResponse{ApiResponse: ApiResponse{OK, "success"}}
+	data := BooksListResponse{ApiResponse: ApiResponse{OK, "success"}}
 	data.Data, _ = repo.GetBooks()
 	json.NewEncoder(w).Encode(data)
 }

@@ -1,5 +1,35 @@
 package models
 
+import (
+	"time"
+)
+
+type Pageable struct {
+	PageNo      int
+	PageSize    int
+	TotalRecord int
+	Data        interface{}
+}
+
+func (p *Pageable) TotalPage() int {
+	if p.PageSize == 0 {
+		return 0
+	}
+	if p.TotalRecord%p.PageSize > 0 {
+		return p.TotalRecord/p.PageSize + 1
+	} else {
+		return p.TotalRecord % p.PageSize
+	}
+}
+
+func (p *Pageable) HasPrevious() bool {
+	return p.PageNo > 0
+}
+
+func (p *Pageable) HasNext() bool {
+	return p.PageNo < p.TotalPage()
+}
+
 type ApiRequest struct {
 	AuthToken string `json:"authToken,omitempty"`
 	Platform  string `json:"platform,omitempty"`
@@ -19,9 +49,18 @@ type EchoResponse struct {
 	Data string `json:"data,omitempty"`
 }
 
-type BooksResponse struct {
+type BooksListResponse struct {
 	ApiResponse
 	Data []Book `json:"data,omitempty"`
+}
+type UsersListResponse struct {
+	ApiResponse
+	Data []User `json:"data,omitempty"`
+}
+
+type UserResponse struct {
+	ApiResponse
+	Data User `json:"data,omitempty"`
 }
 
 type BookResponse struct {
@@ -39,13 +78,13 @@ type Book struct {
 }
 
 type User struct {
-	Id         string `json:"id,omitempty"`
-	LoginName  string `json:"loginName,omitempty"`
-	Password   string `json:"password,omitempty"`
-	NickName   string `json:"nickName,omitempty"`
-	Sex        uint8  `json:"sex,omitempty"`
-	Email      string `json:"email,omitempty"`
-	Mobile     string `json:"mobile,omitempty"`
-	Status     uint8  `json:"status,omitempty"`
-	CreateTime int32  `json:"createTime,omitempty"`
+	Id         string    `gorm:"primary_key" json:"id,omitempty"`
+	LoginName  string    `gorm:"type:varchar(50);not null;" json:"loginName,omitempty"`
+	Password   string    `gorm:"type:varchar(50);not null;" json:"password,omitempty"`
+	NickName   string    `gorm:"type:varchar(50);not null;" json:"nickName,omitempty"`
+	Sex        uint8     `gorm:"type:tinyint;default 1" json:"sex,omitempty"`
+	Email      string    `gorm:"type:varchar(50);" json:"email,omitempty"`
+	Mobile     string    `gorm:"type:varchar(20);" json:"mobile,omitempty"`
+	Status     uint8     `gorm:"type:tinyint;default 0" json:"status,omitempty"`
+	CreateTime time.Time `json:"createTime,omitempty"`
 }

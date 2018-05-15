@@ -4,13 +4,17 @@ appInstanceId : 1
 host : 
 port : 8000
 timeout : 5
+accesslog : false
 database:
   host : 127.0.0.1
   port : 3306
   name : test
   charset : utf8
+  autocommit : true
   username : root
   password : root
+  maxIdleConns : 2
+  maxOpenConns : 5
 elasticsearch:
   host : 192.168.1.134
   port : 9200

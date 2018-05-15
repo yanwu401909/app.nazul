@@ -67,15 +67,17 @@ func main() {
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	/***USERS START***/
-	r.HandleFunc("/api/users/list", service.UsersList).Methods("GET")
-	r.HandleFunc("/api/users/page", service.UsersPage).Methods("GET", "POST")
-	r.HandleFunc("/api/users", service.SaveUser).Methods("POST")
+	r.HandleFunc("/api/users", service.CreateUser).Methods("POST")
+	r.HandleFunc("/api/users", service.UsersPage).Methods("GET")
+	r.HandleFunc("/api/users/{id}", service.UserUpdate).Methods("PUT")
 	r.HandleFunc("/api/users/{id}", service.UserByIdOrName).Methods("GET")
+	r.HandleFunc("/api/users/{id}", service.UserDelete).Methods("DELETE")
+	// r.HandleFunc("/api/users/list", service.UsersList).Methods("GET")
 	/***USERS END***/
 	/***BOOKS START***/
+	r.HandleFunc("/api/books", service.CreateBook).Methods("POST")
 	r.HandleFunc("/api/books/list", service.GetBooks).Methods("GET", "POST")
 	r.HandleFunc("/api/books/{id}", service.GetBook).Methods("GET")
-	r.HandleFunc("/api/books", service.CreateBook).Methods("POST")
 	r.HandleFunc("/api/books/{id}", service.UpdateBook).Methods("PUT")
 	r.HandleFunc("/api/books/{id}", service.DeleteBook).Methods("DELETE")
 	/***BOOKS END***/

@@ -58,6 +58,11 @@ type UsersListResponse struct {
 	Data []User `json:"data,omitempty"`
 }
 
+type UsersPageResponse struct {
+	ApiResponse
+	Data Pageable `json:"data,omitempty"`
+}
+
 type UserResponse struct {
 	ApiResponse
 	Data User `json:"data,omitempty"`

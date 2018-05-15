@@ -7,14 +7,27 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+var listTemp = "id, login_name, nick_name, sex, email, mobile, status, create_time"
+
 func UsersList() (users []models.User, errs ApiError) {
-	if result := CONN.Select("id, login_name, nick_name, sex, email, mobile, status, create_time").Order("create_time").Find(&users); result.Error != nil {
+	if result := CONN.Select(listTemp).Order("create_time desc").Find(&users); result.Error != nil {
 		errs = NewErrorWithMessage(DB_ERROR, result.Error.Error())
 	}
 	return
 }
 
-func UsersPage(pageNo, pageSize int) (users []models.User, errs ApiError) {
+func UsersPage(pageNo, pageSize int) (page models.Pageable, errs ApiError) {
+	users := []models.User{}
+	count := 0
+	if result := CONN.Limit(pageSize).Offset((pageNo - 1) * pageSize).Select(listTemp).Order("create_time desc").Find(&users); result.Error != nil {
+		errs = NewErrorWithMessage(DB_ERROR, result.Error.Error())
+	} else {
+		CONN.Model(&models.User{}).Select(listTemp).Count(&count)
+		page.PageNo = pageNo
+		page.PageSize = pageSize
+		page.TotalRecord = count
+		page.Data = users
+	}
 	return
 }
 

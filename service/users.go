@@ -30,22 +30,21 @@ func UserByIdOrName(w http.ResponseWriter, r *http.Request) {
 }
 
 func UsersPage(w http.ResponseWriter, r *http.Request) {
-	data := UsersListResponse{ApiResponse: ApiResponse{OK, "success"}}
-	attrs := mux.Vars(r)
-	pageNo, _ := strconv.Atoi(attrs["pageNo"])
-	pageSize, _ := strconv.Atoi(attrs["pageSize"])
+	data := UsersPageResponse{ApiResponse: ApiResponse{OK, "success"}}
+	pageNo, _ := strconv.Atoi(r.FormValue("pageNo"))
+	pageSize, _ := strconv.Atoi(r.FormValue("pageSize"))
 	if pageNo <= 0 {
 		pageNo = 1
 	}
 	if pageSize <= 0 || pageSize > 50 {
 		pageSize = 10
 	}
-	users, err := repo.UsersPage(pageNo, pageSize)
+	page, err := repo.UsersPage(pageNo, pageSize)
 	if err.Code != OK {
 		data.ResultCode = err.Code
 		data.ResultMessage = err.Message
 	} else {
-		data.Data = users
+		data.Data = page
 	}
 	json.NewEncoder(w).Encode(data)
 }
@@ -62,7 +61,7 @@ func UsersList(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
-func SaveUser(w http.ResponseWriter, r *http.Request) {
+func CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 	data := ApiResponse{OK, "success"}
 	var user User
@@ -77,13 +76,25 @@ func SaveUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
-func UpdateUser(w http.ResponseWriter, r *http.Request) {
+func UserUpdate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 	id := mux.Vars(r)["id"]
 	data := ApiResponse{OK, "success"}
 	var user User
 	_ = json.NewDecoder(r.Body).Decode(&user)
 	err := repo.UpdateUser(id, &user)
+	if err.Code != OK {
+		data.ResultCode = err.Code
+		data.ResultMessage = err.Message
+	}
+	json.NewEncoder(w).Encode(data)
+}
+
+func UserDelete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json")
+	id := mux.Vars(r)["id"]
+	data := ApiResponse{OK, "success"}
+	err := repo.DeleteUser(id)
 	if err.Code != OK {
 		data.ResultCode = err.Code
 		data.ResultMessage = err.Message

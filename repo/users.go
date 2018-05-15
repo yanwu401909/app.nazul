@@ -8,7 +8,7 @@ import (
 )
 
 func UsersList() (users []models.User, errs ApiError) {
-	if result := CONN.Select("login_name, nick_name, sex, email, mobile, status, create_time").Order("create_time").Find(&users); result.Error != nil {
+	if result := CONN.Select("id, login_name, nick_name, sex, email, mobile, status, create_time").Order("create_time").Find(&users); result.Error != nil {
 		errs = NewErrorWithMessage(DB_ERROR, result.Error.Error())
 	}
 	return
@@ -19,7 +19,7 @@ func UsersPage(pageNo, pageSize int) (users []models.User, errs ApiError) {
 }
 
 func FindUserByIdOrLoginName(idOrName string) (user models.User, errs ApiError) {
-	if result := CONN.Where("id = ?", idOrName).Or("loginName = ?", idOrName).First(&user); result.Error != nil {
+	if result := CONN.Where("id = ?", idOrName).Or("login_name = ?", idOrName).First(&user); result.Error != nil {
 		errs = NewErrorWithMessage(DB_ERROR, result.Error.Error())
 	}
 	return
